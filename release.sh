@@ -8,7 +8,7 @@
 
 TAG="1.1.0"
 FILES=("manifest.json" "main.js" "styles.css")
-NOTES=""
+NOTES="Reading view support"
 
 git add -A && git commit -m "version bump: $TAG"
 git tag "$TAG"
