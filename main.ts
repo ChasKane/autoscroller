@@ -212,11 +212,13 @@ class AutoScrollSettingTab extends PluginSettingTab {
 							(e) => {
 								if (e.button === 0) {
 									// left mouse button
+									// @ts-ignore
 									app.commands.executeCommandById(
 										`${pluginId}:toggle-scrolling`
 									);
 								} else {
 									// right mouse button
+									// @ts-ignore
 									app.commands.executeCommandById(
 										`${pluginId}:increase-speed`
 									);
