@@ -6,9 +6,9 @@
 # versions.json
 # package.json
 
-TAG="1.1.0"
+TAG="1.1.1"
 FILES=("manifest.json" "main.js" "styles.css")
-NOTES="Reading view support"
+NOTES="Fix fatal error."
 
 git add -A && git commit -m "version bump: $TAG"
 git tag "$TAG"

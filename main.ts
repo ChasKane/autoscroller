@@ -26,7 +26,7 @@ export default class AutoScrollPlugin extends Plugin {
 	ribbonIconEl: HTMLElement;
 
 	private stopScroll() {
-		this.ribbonIconEl.removeClass(ribbonActiveClassName);
+		this.ribbonIconEl?.classList.remove(ribbonActiveClassName);
 		new Notice("Stopping Auto Scroller");
 		window.clearInterval(this.intervalId);
 		this.active = false;
@@ -35,7 +35,8 @@ export default class AutoScrollPlugin extends Plugin {
 		this.pixelfractionCounter += this.settings.speed;
 		if (this.pixelfractionCounter < 1) return;
 
-		const markdownView = app.workspace.getActiveViewOfType(MarkdownView);
+		const markdownView =
+			this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (!markdownView) {
 			new Notice("No markdown view found");
 			this.stopScroll();
@@ -102,7 +103,7 @@ export default class AutoScrollPlugin extends Plugin {
 				if (this.active) {
 					this.stopScroll();
 				} else {
-					this.ribbonIconEl.addClass(ribbonActiveClassName);
+					this.ribbonIconEl?.classList.add(ribbonActiveClassName);
 					new Notice("Starting Auto Scroller");
 					this.active = true;
 					this.intervalId = this.registerInterval(
@@ -150,13 +151,13 @@ export default class AutoScrollPlugin extends Plugin {
 					if (e.button === 0) {
 						// left mouse button
 						// @ts-ignore
-						app.commands.executeCommandById(
+						this.app.commands.executeCommandById(
 							`${pluginId}:toggle-scrolling`
 						);
 					} else {
 						// right mouse button
 						// @ts-ignore
-						app.commands.executeCommandById(
+						this.app.commands.executeCommandById(
 							`${pluginId}:increase-speed`
 						);
 					}
@@ -202,33 +203,36 @@ class AutoScrollSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Show Ribbon Icon")
 			.addToggle((toggle) =>
-				toggle.setValue(true).onChange((value) => {
-					this.plugin.settings.showRibbonIcon = value;
-					this.plugin.saveSettings();
-					if (value) {
-						this.plugin.ribbonIconEl = this.plugin.addRibbonIcon(
-							"double-down-arrow-glyph",
-							`Auto Scroller (speed ${this.plugin.settings.speed})`,
-							(e) => {
-								if (e.button === 0) {
-									// left mouse button
-									// @ts-ignore
-									app.commands.executeCommandById(
-										`${pluginId}:toggle-scrolling`
-									);
-								} else {
-									// right mouse button
-									// @ts-ignore
-									app.commands.executeCommandById(
-										`${pluginId}:increase-speed`
-									);
-								}
-							}
-						);
-					} else {
-						this.plugin.ribbonIconEl?.remove();
-					}
-				})
+				toggle
+					.setValue(this.plugin.settings.showRibbonIcon)
+					.onChange((value) => {
+						this.plugin.settings.showRibbonIcon = value;
+						this.plugin.saveSettings();
+						if (value) {
+							this.plugin.ribbonIconEl =
+								this.plugin.addRibbonIcon(
+									"double-down-arrow-glyph",
+									`Auto Scroller (speed ${this.plugin.settings.speed})`,
+									(e) => {
+										if (e.button === 0) {
+											// left mouse button
+											// @ts-ignore
+											this.app.commands.executeCommandById(
+												`${pluginId}:toggle-scrolling`
+											);
+										} else {
+											// right mouse button
+											// @ts-ignore
+											this.app.commands.executeCommandById(
+												`${pluginId}:increase-speed`
+											);
+										}
+									}
+								);
+						} else {
+							this.plugin.ribbonIconEl?.remove();
+						}
+					})
 			);
 
 		new Setting(containerEl)
