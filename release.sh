@@ -6,8 +6,8 @@
 # versions.json
 # package.json
 
-TAG="1.1.3"
-FILES=("manifest.json" "main.js" "styles.css")
+TAG="1.1.4"
+FILES=("manifest.json", "main.js", "styles.css")
 NOTES="Fix fatal error (on windows)."
 
 git add -A && git commit -m "version bump: $TAG"
