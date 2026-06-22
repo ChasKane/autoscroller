@@ -1,9 +1,9 @@
 {
-	"id": "autoscroll",
-	"name": "Autoscroll",
-	"version": "1.1.5",
+	"id": "drift-scroll",
+	"name": "Drift Scroll",
+	"version": "1.1.6",
 	"minAppVersion": "1.0.0",
-	"description": "Scroll notes automatically at a configurable speed.",
+	"description": "Drift through long notes at your chosen reading pace.",
 	"author": "Chas Kane",
 	"authorUrl": "https://github.com/ChasKane",
 	"isDesktopOnly": false

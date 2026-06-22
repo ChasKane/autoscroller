@@ -5,7 +5,7 @@
 
 TAG="1.1.5"
 FILES=("manifest.json" "main.js" "styles.css")
-NOTES="Prepare for Obsidian Community submission."
+NOTES="Rename to Drift Scroll."
 
 npm run build
 npm run lint
