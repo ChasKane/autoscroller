@@ -1,9 +1,9 @@
 {
-	"id": "obsidian-autoscroll",
+	"id": "autoscroll",
 	"name": "Autoscroll",
-	"version": "1.1.4",
-	"minAppVersion": "0.15.0",
-	"description": "Automatically scroll content with the provided speed",
+	"version": "1.1.5",
+	"minAppVersion": "1.0.0",
+	"description": "Scroll notes automatically at a configurable speed.",
 	"author": "Chas Kane",
 	"authorUrl": "https://github.com/ChasKane",
 	"isDesktopOnly": false

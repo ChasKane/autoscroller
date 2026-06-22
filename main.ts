@@ -17,18 +17,21 @@ const DEFAULT_SETTINGS: AutoScrollSettings = {
 	showRibbonIcon: true,
 };
 const ribbonActiveClassName = "autoscroll-ribbon-active";
-const pluginId = "autoscroll";
+
 export default class AutoScrollPlugin extends Plugin {
-	settings: AutoScrollSettings;
-	active: boolean = false;
-	intervalId: number;
-	pixelfractionCounter: number = 0;
-	ribbonIconEl: HTMLElement;
+	settings!: AutoScrollSettings;
+	active = false;
+	intervalId?: number;
+	pixelfractionCounter = 0;
+	ribbonIconEl?: HTMLElement;
 
 	private stopScroll() {
 		this.ribbonIconEl?.classList.remove(ribbonActiveClassName);
-		new Notice("Stopping Auto Scroller");
-		window.clearInterval(this.intervalId);
+		new Notice("Stopping auto scroller");
+		if (this.intervalId !== undefined) {
+			window.clearInterval(this.intervalId);
+			this.intervalId = undefined;
+		}
 		this.active = false;
 	}
 
@@ -37,7 +40,7 @@ export default class AutoScrollPlugin extends Plugin {
 			this.stopScroll();
 		} else {
 			this.ribbonIconEl?.classList.add(ribbonActiveClassName);
-			new Notice("Starting Auto Scroller");
+			new Notice("Starting auto scroller");
 			this.active = true;
 			this.intervalId = this.registerInterval(
 				window.setInterval(() => this.performScroll(), 10)
@@ -66,6 +69,7 @@ export default class AutoScrollPlugin extends Plugin {
 		await this.saveSettings();
 		new Notice("Setting speed to " + this.settings.speed);
 	}
+
 	private performScroll() {
 		this.pixelfractionCounter += this.settings.speed;
 		if (this.pixelfractionCounter < 1) return;
@@ -73,7 +77,7 @@ export default class AutoScrollPlugin extends Plugin {
 		const markdownView =
 			this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (!markdownView) {
-			new Notice("No markdown view found");
+			new Notice("No Markdown view found");
 			this.stopScroll();
 			return;
 		}
@@ -133,31 +137,35 @@ export default class AutoScrollPlugin extends Plugin {
 
 		this.addCommand({
 			id: "toggle-scrolling",
-			name: "Autoscroller: toggle scrolling",
-			callback: this.toggleScrolling.bind(this),
+			name: "Toggle scrolling",
+			callback: () => {
+				this.toggleScrolling();
+			},
 		});
 		this.addCommand({
 			id: "increase-speed",
-			name: "Autoscroller: increase speed",
-			callback: this.increaseSpeed.bind(this),
+			name: "Increase speed",
+			callback: () => {
+				void this.increaseSpeed();
+			},
 		});
 		this.addCommand({
 			id: "decrease-speed",
-			name: "Autoscroller: decrease speed",
-			callback: this.decreaseSpeed.bind(this),
+			name: "Decrease speed",
+			callback: () => {
+				void this.decreaseSpeed();
+			},
 		});
 
 		if (this.settings.showRibbonIcon) {
 			this.ribbonIconEl = this.addRibbonIcon(
 				"double-down-arrow-glyph",
-				`Auto Scroller (speed ${this.settings.speed})`,
+				`Auto scroller (speed ${this.settings.speed})`,
 				(e) => {
 					if (e.button === 0) {
-						// left mouse button
 						this.toggleScrolling();
 					} else {
-						// right mouse button
-						this.increaseSpeed();
+						void this.increaseSpeed();
 					}
 				}
 			);
@@ -167,15 +175,18 @@ export default class AutoScrollPlugin extends Plugin {
 	}
 
 	onunload() {
-		window.clearInterval(this.intervalId);
+		if (this.intervalId !== undefined) {
+			window.clearInterval(this.intervalId);
+		}
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
+		const saved: unknown = await this.loadData();
+		const data =
+			typeof saved === "object" && saved !== null
+				? (saved as Partial<AutoScrollSettings>)
+				: {};
+		this.settings = { ...DEFAULT_SETTINGS, ...data };
 	}
 
 	async saveSettings() {
@@ -196,28 +207,24 @@ class AutoScrollSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl("h2", { text: "Settings for Autoscroll Plugin" });
-
 		new Setting(containerEl)
-			.setName("Show Ribbon Icon")
+			.setName("Show ribbon icon")
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.showRibbonIcon)
 					.onChange((value) => {
 						this.plugin.settings.showRibbonIcon = value;
-						this.plugin.saveSettings();
+						void this.plugin.saveSettings();
 						if (value) {
 							this.plugin.ribbonIconEl =
 								this.plugin.addRibbonIcon(
 									"double-down-arrow-glyph",
-									`Auto Scroller (speed ${this.plugin.settings.speed})`,
+									`Auto scroller (speed ${this.plugin.settings.speed})`,
 									(e) => {
 										if (e.button === 0) {
-											// left mouse button
 											this.plugin.toggleScrolling();
 										} else {
-											// right mouse button
-											this.plugin.increaseSpeed();
+											void this.plugin.increaseSpeed();
 										}
 									}
 								);
